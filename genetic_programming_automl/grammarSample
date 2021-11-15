@@ -1,0 +1,128 @@
+#<pipeline> ::= <adding_features> "->" <scaler> "->" <preprocessing> "->" <selector> "->" <classifier> | <scaler> "->" <preprocessing> "->" <selector> "->" <classifier> | <adding_features> "->"  <scaler> "->" <preprocessing> "->" <classifier> |  <scaler> "->" <preprocessing> "->" <classifier> |  <adding_features> "->" <classifier> | <classifier>
+
+<pipeline> ::= <adding_features> "->" <selector> "->" <classifier> | <scaler> "->" <preprocessing> "->" <selector> "->" <classifier> | <adding_features> "->"  <classifier> |  <scaler> "->" <preprocessing> "->" <classifier> | <classifier>
+
+#<adding_features> ::= <adding_features> | <adding_features> "->" <adding_features>
+
+<classifier> ::= <NaiveBayes> | <Tree> | <scaler> "->" <KNN> | <scaler> "->"  <FunctionalClassifier>
+
+<Tree> ::= <DecisionTree> | <EnsembleTree>
+<FunctionalClassifier> ::= <LinearClassifier> | <NonLinearClassifier>
+
+<NaiveBayes> ::= "sklearn.naive_bayes/GaussianNB()" | "sklearn.naive_bayes/BernoulliNB(alpha=" <alpha> ", fit_prior=" <fit_prior> ")" | "sklearn.naive_bayes/MultinomialNB(alpha=" <alpha> ", fit_prior=" <fit_prior> ")" 
+<alpha> ::= '1e-3' | '1e-2' | '1e-1' | '1.' | '10' | '100'
+<fit_prior> ::= "True" | "False"
+
+<DecisionTree> ::= "sklearn.tree/DecisionTreeClassifier(criterion=" <criterion> ", max_depth=" <max_depth> ", min_samples_split=" <min_samples_split> ", min_samples_leaf=" <min_samples_leaf> ", random_state=" <RANDOM_STATE> ")"
+<criterion> ::= "'gini'" | "'entropy'"
+<max_depth> ::= "CONSTINT(1,11)"
+<min_samples_split> ::= "CONSTINT(2, 21)"
+<min_samples_leaf> ::= "CONSTINT(1, 21)"
+
+<EnsembleTree> ::= "sklearn.ensemble/ExtraTreesClassifier(n_estimators=100, criterion=" <criterion> ", max_features=" <max_features> ", min_samples_split=" <min_samples_split> ",min_samples_leaf=" <min_samples_leaf> ", bootstrap=" <bootstrap> ", random_state=" <RANDOM_STATE> ")"
+#<max_features> ::= "CONSTFLOAT(0.05, 1.01, 0.05)"
+<max_features> ::= "CONSTFLOAT(0.05, 1.0)"
+<bootstrap> ::= "True" | "False"
+
+<EnsembleTree> ::= "sklearn.ensemble/RandomForestClassifier(n_estimators=100, criterion=" <criterion>  ", max_features=" <max_features> ", min_samples_split=" <min_samples_split> ",min_samples_leaf=" <min_samples_leaf> ", bootstrap=" <bootstrap> ", random_state=" <RANDOM_STATE> ")"
+
+<EnsembleTree> ::= "sklearn.ensemble/GradientBoostingClassifier(n_estimators=100, learning_rate=" <learning_rate> ", max_depth=" <max_depth> ", min_samples_split=" <min_samples_split> ", min_samples_leaf=" <min_samples_leaf> ", subsample=" <subsample> ", max_features=" <max_features> ", random_state=" <RANDOM_STATE> ")"
+<learning_rate> ::= "1e-3" | "1e-2" | "1e-1" | "0.5" | "1."
+#<subsample> ::= "CONSTFLOAT(0.05, 1.01, 0.05)"
+<subsample> ::= "CONSTFLOAT(0.05, 1.0)"
+
+<KNN> ::= "sklearn.neighbors/KNeighborsClassifier(n_neighbors=" <n_neighbors> ", weights=" <weights> ", p=" <p_knn> ")"
+<n_neighbors> ::= "CONSTINT(1, 101)"
+<weights> ::= "'uniform'" | "'distance'"
+<p_knn> ::= "1" | "2"
+
+#<LinearClassifier> ::= "sklearn.svm/LinearSVC(penalty=" <penalty> ", loss=" <loss> ", dual=" <dual> ", tol=" <tol> ", C=" <C> ", random_state=" <RANDOM_STATE> ")"
+<LinearClassifier> ::= "sklearn.svm/LinearSVC(" <settings_linear_svc> ", tol=" <tol> ", C=" <C> ", random_state=" <RANDOM_STATE> ")"
+<settings_linear_svc> ::= "dual=False, loss='squared_hinge', penalty=" <penalty> | "dual=True, loss=" <loss> ", penalty='l2'"
+<penalty> ::= "'l1'" | "'l2'"
+<loss> ::= "'hinge'" | "'squared_hinge'"
+<dual> ::= "True" | "False"
+<tol> ::= "1e-5" | "1e-4" | "1e-3" | "1e-2" | "1e-1"
+<C> ::= "1e-4" | "1e-3" | "1e-2" | "1e-1" | "0.5" | "1." | "5." | "10." | "15." | "20." | "25."
+
+#<LinearClassifier> ::= "sklearn.linear_model/LogisticRegression(penalty=" <penalty> ", C=" <C> ", dual=" <dual> ", random_state=" <RANDOM_STATE> ")" 
+<LinearClassifier> ::= "sklearn.linear_model/LogisticRegression(" <settings_logistic> ", C=" <C> ", random_state=" <RANDOM_STATE> ")" 
+<settings_logistic> ::= "dual=False, penalty='l2'"
+
+
+<EnsembleTree> ::= "xgboost/XGBClassifier(n_estimators=100, max_depth=" <max_depth> ", learning_rate=" <learning_rate> ", subsample=" <subsample> ", min_child_weight=" <min_child_weight> ", random_state=" <RANDOM_STATE> ", seed=" <RANDOM_STATE> ", nthread=1)"
+<min_child_weight> ::= "CONSTINT(1, 21)"
+
+<LinearClassifier> ::= "sklearn.linear_model/SGDClassifier(loss=" <loss_sgd> ", penalty='elasticnet', alpha=" <alpha_sgd> ", learning_rate=" <learning_rate_sgd> ",fit_intercept=" <fit_intercept> ", l1_ratio=" <l1_ratio> ", eta0=" <eta0> ", power_t=" <power_t> ", random_state=" <RANDOM_STATE> ")"
+<loss_sgd> ::= "'log'" | "'hinge'" | "'modified_huber'" | "'squared_hinge'" | "'perceptron'"
+<alpha_sgd> ::= "0.0" | "0.01" | "0.001"
+<learning_rate_sgd> ::= "'invscaling'" | "'constant'"
+<fit_intercept> ::= "True" | "False"
+<l1_ratio> ::= "0.25" | "0.0" | "1.0" | "0.75" | "0.5"
+<eta0> ::= "0.1" | "1.0" | "0.01"
+<power_t> ::= "0.0" | "0.1" | "0.5" | "1.0" | "10.0" | "50.0" | "100.0"
+
+<NonLinearClassifier> ::= "sklearn.neural_network/MLPClassifier(alpha=" <alpha_mlp> ", learning_rate_init=" <learning_rate> ", random_state=" <RANDOM_STATE> ")"
+<alpha_mlp> ::= "1e-4" | "1e-3" | "1e-2" | "1e-1"
+
+
+#Preprocessing
+
+<preprocessing> ::= "sklearn.preprocessing/Binarizer(threshold=" <threshold> ")" | "sklearn.preprocessing/Normalizer(norm=" <norm> ")"
+#<threshold> ::= "CONSTFLOAT(0.0, 1.01, 0.05)"
+<threshold> ::= "CONSTFLOAT(0.0, 1.0)"
+<norm> ::= "'l1'" | "'l2'" | "'max'"
+
+
+<preprocessing> ::= "sklearn.decomposition/FastICA(tol=" <tol_ica> ", random_state=" <RANDOM_STATE> ")"
+#<tol_ica> ::= "CONSTFLOAT(0.0, 1.01, 0.05)"
+<tol_ica> ::= "CONSTFLOAT(0.0, 1.0)"
+
+<preprocessing> ::= "sklearn.cluster/FeatureAgglomeration(linkage=" <linkage> ", affinity=" <affinity> ")"
+<linkage> ::= "'ward'" | "'complete'" | "'average'"
+<affinity> ::= "'euclidean'" | "'l1'" | "'l2'" | "'manhattan'" | "'cosine'"
+
+
+<scaler> ::= "sklearn.preprocessing/MaxAbsScaler()" | "sklearn.preprocessing/MinMaxScaler()" | "sklearn.preprocessing/RobustScaler()" | "sklearn.preprocessing/StandardScaler()"
+
+
+
+<preprocessing> ::= "sklearn.kernel_approximation/Nystroem(kernel=" <kernel> ", gamma=" <gamma> ", n_components=" <n_components> ", random_state=" <RANDOM_STATE> ")"
+<kernel> ::= "'rbf'" | "'cosine'" | "'chi2'" | "'laplacian'" | "'polynomial'" | "'poly'" | "'linear'" | "'additive_chi2'" | "'sigmoid'"
+#<gamma> ::= "CONSTFLOAT(0.0, 1.01, 0.05)"
+<gamma> ::= "CONSTFLOAT(0.0, 1.0)"
+<n_components> ::= "CONSTINT(1, 11)"
+
+<preprocessing> ::= "sklearn.decomposition/PCA(svd_solver='randomized', iterated_power=" <iterated_power> ", random_state=" <RANDOM_STATE> ")"
+<iterated_power> ::= "CONSTINT(1, 11)"
+
+<preprocessing> ::= <selector> "->" "sklearn.preprocessing/PolynomialFeatures(degree=2, include_bias=False, interaction_only=False)" | "sklearn.kernel_approximation/RBFSampler(gamma=" <gamma> ", random_state=" <RANDOM_STATE> ")" 
+
+<adding_features> ::= "AUTOCVE.util.custom_methods.TPOT/ZeroCount()" | "AUTOCVE.util.custom_methods.TPOT/OneHotEncoder(minimum_fraction=" <minimum_fraction> ", threshold=10, sparse=False)"
+<minimum_fraction> ::= "0.05" | "0.1" | "0.15" | "0.2" | "0.25"
+
+
+# Selectors
+<selector> ::= "sklearn.feature_selection/SelectFwe(alpha=" <alpha_selector> ", score_func=sklearn.feature_selection/f_classif)"
+#<alpha_selector> ::= "CONSTFLOAT(0, 0.05, 0.001)"
+<alpha_selector> ::= "CONSTFLOAT(0, 0.05)"
+
+
+<selector> ::= "sklearn.feature_selection/SelectPercentile(percentile=" <percentile> ", score_func=sklearn.feature_selection/f_classif)"
+<percentile> ::= "CONSTINT(1, 100)"
+
+
+
+<selector> ::= "sklearn.feature_selection/VarianceThreshold(threshold=" <variance_threshold> ")"
+<variance_threshold> ::= '0.0001' | '0.0005' | '0.001' | '0.005' | '0.01' | '0.05' | '0.1' | '0.2'
+
+<selector> ::= "sklearn.feature_selection/RFE(step=" <step> ", estimator=" <estimator> ")"
+#<step> ::= "CONSTFLOAT(0.05, 1.01, 0.05)"
+<step> ::= "CONSTFLOAT(0.05, 1.0)"
+<estimator> ::= "sklearn.ensemble/ExtraTreesClassifier(n_estimators=100, criterion=" <criterion> ", max_features=" <max_features> ", random_state=" <RANDOM_STATE> ")"
+
+<selector> ::= "sklearn.feature_selection/SelectFromModel(threshold=" <threshold> ", estimator=" <estimator> ")"
+
+
+<RANDOM_STATE> ::= "42"
+
