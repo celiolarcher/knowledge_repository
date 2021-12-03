@@ -8,6 +8,6 @@ Files:
 
 - automl_test.ipynb: notebook with the hands-on class.
 - requirements.txt: file with library dependencies. Note that AutoCVE needs to be installed through GitHub (https://github.com/celiolarcher/AUTOCVE).
-- presentation.pdf: comming soon.
+- presentation.pdf: lecture given in a UFJF class.
 - grammarSample: grammar file to be customized in the tutorial.
 
